@@ -1,77 +1,81 @@
-/*
-ver ::cl 20120520
-Configuracion basica para modulo transmisor RT 11
-Utiliza libreria VirtualWire.h
-pin 01 entrada desde Arduino pin digital 2
-pin 02 Tierra
-pin 07 tierra
-pin 08 antena externa
-pin 09 tierra
-pin 10 5v
-*/
-
-
 #include <VirtualWire.h>
-const char *msg = "H";
 
-uint8_t img[43][7] = {
-{0b00000001, 0b00000011, 0b00000011, 0b10000000, 0b00000000, 0b00000000, 0b10000001},
-{0b00000010, 0b00000011, 0b00000011, 0b00000001, 0b01000000, 0b00000000, 0b01000011},
-{0b00000011, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00100000, 0b00100011},
-{0b00000100, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00000100},
-{0b00000101, 0b00000011, 0b00000011, 0b00010000, 0b00000000, 0b00000000, 0b00010101},
-{0b00000110, 0b00000011, 0b00000011, 0b00000000, 0b00001000, 0b00000000, 0b00001110},
-{0b00000111, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000100, 0b00000011},
-{0b00001000, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00001000},
-{0b00001001, 0b00000011, 0b00000011, 0b00000010, 0b00000000, 0b00000000, 0b00001011},
-{0b00001010, 0b00000011, 0b00000011, 0b00000000, 0b00000001, 0b00000000, 0b00001011},
-{0b00001011, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00001011},
-{0b00001100, 0b00000011, 0b00000011, 0b10000000, 0b00000000, 0b00000000, 0b10001100},
-{0b00001101, 0b00000011, 0b00000011, 0b00000000, 0b01000000, 0b00000000, 0b01001101},
-{0b00001110, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00100000, 0b00101110},
-{0b00001111, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00001111},
-{0b00010000, 0b00000011, 0b00000011, 0b00010000, 0b00000000, 0b00000000, 0b00000000},
-{0b00010001, 0b00000011, 0b00000011, 0b00000000, 0b00001000, 0b00000000, 0b00011001},
-{0b00010010, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000100, 0b00010110},
-{0b00010011, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00010011},
-{0b00010100, 0b00000011, 0b00000011, 0b00000010, 0b00000000, 0b00000000, 0b00010110},
-{0b00010101, 0b00000011, 0b00000011, 0b00000000, 0b00000001, 0b00000000, 0b00010100},
-{0b00010110, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00010110},
-{0b00010111, 0b00000011, 0b00000011, 0b10000000, 0b00000000, 0b00000000, 0b10010111},
-{0b00011000, 0b00000011, 0b00000011, 0b00000000, 0b01000000, 0b00000000, 0b01011000},
-{0b00011001, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00100000, 0b00111001},
-{0b00011010, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00011010},
-{0b00011011, 0b00000011, 0b00000011, 0b00010000, 0b00000000, 0b00000000, 0b00001011},
-{0b00011100, 0b00000011, 0b00000011, 0b00000000, 0b00001000, 0b00000000, 0b00010100},
-{0b00011101, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000100, 0b00011001},
-{0b00011110, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00011110},
-{0b00011111, 0b00000011, 0b00000011, 0b00000010, 0b00000000, 0b00000000, 0b00011101},
-{0b00100000, 0b00000011, 0b00000011, 0b00000000, 0b00000001, 0b00000000, 0b00100001},
-{0b00100001, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00100001},
-{0b00100010, 0b00000011, 0b00000011, 0b10000000, 0b00000000, 0b00000000, 0b10100010},
-{0b00100011, 0b00000011, 0b00000011, 0b00000000, 0b01000000, 0b00000000, 0b01100011},
-{0b00100100, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00100000, 0b00000100},
-{0b00100101, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00100101},
-{0b00100110, 0b00000011, 0b00000011, 0b00010000, 0b00000000, 0b00000000, 0b00110110},
-{0b00100111, 0b00000011, 0b00000011, 0b00000000, 0b00001000, 0b00000000, 0b00101111},
-{0b00101000, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000100, 0b00101100},
-{0b00101001, 0b00000011, 0b00000011, 0b00000000, 0b00000000, 0b00000000, 0b00101001},
-{0b00101010, 0b00000011, 0b00000011, 0b00000010, 0b10000000, 0b00000000, 0b10101000},
-{0b00101011, 0b00000011, 0b00000011, 0b00000000, 0b00000001, 0b00000000, 0b00101010}
-};
+const uint8_t ID_EMISOR = 0x03;
+const uint8_t ID_RECEPTOR = 0x03;
 
-void setup(){
+const int LED_PIN = 13;  // Puedes usar otro pin si tienes un LED externo
+
+uint8_t imagen[1024]; // Imagen binaria: 0s y 1s
+
+void setup() {
     vw_set_ptt_inverted(true);
     vw_setup(2000);
-    vw_set_tx_pin(2);    
-   Serial.begin(9600);
-   Serial.println("configurando envio");
+    vw_set_tx_pin(2);
+    Serial.begin(9600);
+    Serial.println("Iniciando transmisión...");
+
+    pinMode(LED_PIN, OUTPUT);  // Configura el LED como salida
+
+    for (int i = 0; i < 1024; i++) {
+        imagen[i] = random(0, 2);
+    }
 }
-void loop(){
-   for (int i = 0; i <= 42; i++){
-      vw_send(img[i], 7);
-      vw_wait_tx();
-      delay(1000);
-      Serial.println("mensaje enviado");
-   }
+
+void loop() {
+    const int BITS_POR_MENSAJE = 24;
+    const int TOTAL_BITS = 1024;
+    const int TOTAL_PAQUETES = (TOTAL_BITS + BITS_POR_MENSAJE - 1) / BITS_POR_MENSAJE;
+
+    for (int paquete_num = 0; paquete_num < TOTAL_PAQUETES; paquete_num++) {
+        uint8_t paquete[6];  // [cabecera][id_emisor][id_receptor][mensaje(3)][checksum]
+
+        paquete[0] = paquete_num + 1;
+        paquete[1] = ID_EMISOR;
+        paquete[2] = ID_RECEPTOR;
+
+        uint8_t byte0 = 0, byte1 = 0, byte2 = 0;
+        for (int i = 0; i < BITS_POR_MENSAJE; i++) {
+            int bit_idx = paquete_num * BITS_POR_MENSAJE + i;
+            uint8_t bit_val = (bit_idx < TOTAL_BITS) ? imagen[bit_idx] : 0;
+
+            if (i < 8)
+                byte0 |= (bit_val << (7 - i));
+            else if (i < 16)
+                byte1 |= (bit_val << (15 - i));
+            else
+                byte2 |= (bit_val << (23 - i));
+        }
+
+        paquete[3] = byte0;
+        paquete[4] = byte1;
+        paquete[5] = byte2;
+
+        uint8_t checksum = 0;
+        for (int i = 0; i < 5; i++) {
+            checksum += paquete[i];
+        }
+
+        uint8_t paquete_envio[7];
+        for (int i = 0; i < 6; i++) {
+            paquete_envio[i] = paquete[i];
+        }
+        paquete_envio[6] = checksum;
+
+        // Encender LED (envío iniciado)
+        digitalWrite(LED_PIN, HIGH);
+
+        vw_send(paquete_envio, 7);
+        vw_wait_tx();
+
+        Serial.print("Paquete ");
+        Serial.print(paquete_num + 1);
+        Serial.println(" enviado.");
+
+        delay(100); // Mantener el LED encendido un momento
+        digitalWrite(LED_PIN, LOW); // Apagar LED
+        delay(1001); // Pausa entre paquetes
+    }
+
+    Serial.println("Transmisión completa.");
+    while (1);
 }
