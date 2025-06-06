@@ -24,8 +24,6 @@ bool recibido[43];
 
 const uint8_t ID_EMISOR = 0b00000011;
 const uint8_t ID_RECEPTOR = 0b00000011;
-const uint8_t d = 173;
-const uint8_t n = 323; 
 
 void llenarImg(uint8_t img[3], uint8_t cabecera){
   for (int i = 0; i <= 2; i++){
