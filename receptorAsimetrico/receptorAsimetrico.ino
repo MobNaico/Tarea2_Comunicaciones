@@ -1,33 +1,18 @@
-/*
-ver ::cl 20120520
-Configuracion basica para modulo receptor  RR 10
-Utiliza libreria VirtualWire.h
-pin 01 5v
-pin 02 Tierra
-pin 03 antena externa
-pin 07 tierra
-pin 10 5v
-pin 11 tierra
-pin 12 5v
-pin 14 Arduino pin digital 2
-pin 15 5v
-*/
-
 #include <VirtualWire.h>
 
 #define TOTAL_BYTES 128
-
-const uint8_t clave = 0x3F;
 
 uint8_t imageBytes[TOTAL_BYTES];
 bool recibido[43];
 
 const uint8_t ID_EMISOR = 0b00000011;
 const uint8_t ID_RECEPTOR = 0b00000011;
+const unsigned long d = 205;
+const unsigned long n = 256;
 
 void llenarImg(uint8_t img[3], uint8_t cabecera){
   for (int i = 0; i <= 2; i++){
-    imageBytes[3 * cabecera + i] = img[i];
+    imageBytes[3 * (cabecera) + i] = img[i];
   }
   recibido[cabecera] = true;
 }
@@ -75,10 +60,12 @@ uint8_t calcularCRC8(const uint8_t *datos, size_t longitud) {
   return crc;
 }
 
-void descifradoXOR(uint8_t* mensaje){
-    for (int i = 3; i <= 5; i++) {
-        mensaje[i] ^= clave;
-    }
+uint8_t decryptByte(unsigned long c) {
+    unsigned long result = 1;
+   
+    result = (c * d) % n;
+
+    return (uint8_t)result;
 }
 
 void setup(){
@@ -96,7 +83,6 @@ void loop(){
 
     if (vw_get_message(buf, &buflen)) {
       uint8_t cabecera = buf[0];
-      descifradoXOR(buf);
 
       if (!recibido[cabecera]){
         uint8_t protocolo1[VW_MAX_MESSAGE_LEN - 1];
@@ -123,9 +109,9 @@ void loop(){
               digitalWrite(13,false);
               delay(200);
 
-              mensaje[0] = protocolo3[0];
-              mensaje[1] = protocolo3[1];
-              mensaje[2] = protocolo3[2];
+              mensaje[0] = decryptByte(protocolo3[0]);
+              mensaje[1] = decryptByte(protocolo3[1]);
+              mensaje[2] = decryptByte(protocolo3[2]);
 
               uint8_t checksum = protocolo3[3]; 
               uint8_t paqueteSinCheck[6];

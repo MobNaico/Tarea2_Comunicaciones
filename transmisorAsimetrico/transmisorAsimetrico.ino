@@ -3,7 +3,8 @@
 
 const uint8_t ID_EMISOR = 0x03;
 const uint8_t ID_RECEPTOR = 0x03;
-const uint8_t clave = 0x3F;
+const unsigned long e = 5;
+const unsigned long n = 256;
 
 const int LED_PIN = 13;
 const char matriz_txt[] PROGMEM =
@@ -35,7 +36,7 @@ const char matriz_txt[] PROGMEM =
     "11111000000000111000000000111111"
     "11110000000000010000000000011111"
     "11100000000000010000000000011111"
-    "11100000000000000000000000001111"
+    "11100000000000000000000000001111" 
     "11111111111111111111111111111111"
     "11111111111111111111111111111111"
     "11111111111111111111111111111111";
@@ -58,10 +59,12 @@ uint8_t calcularCRC8(const uint8_t *datos, size_t longitud) {
   return crc;
 }
 
-void cifradoXOR(uint8_t* paquete){
-    for (int i = 3; i <= 5; i++) {
-        paquete[i] ^= clave;
-    }
+unsigned long encryptByte(uint8_t m) {
+    unsigned long result = 1;
+    
+    result = (m * e) % n;
+
+    return (uint8_t)result;
 }
 
 void setup() {
@@ -100,9 +103,9 @@ void loop() {
                 byte2 |= (bit_val << (23 - i));
         }
 
-        paquete[3] = byte0;
-        paquete[4] = byte1;
-        paquete[5] = byte2;
+        paquete[3] = encryptByte(byte0);
+        paquete[4] = encryptByte(byte1);
+        paquete[5] = encryptByte(byte2);
 
         uint8_t checksum = calcularCRC8(paquete, 6);
 
@@ -111,8 +114,6 @@ void loop() {
             paquete_envio[i] = paquete[i];
         }
         paquete_envio[6] = checksum;
-
-        cifradoXOR(paquete_envio);
 
         digitalWrite(LED_PIN, HIGH);
         vw_send(paquete_envio, 7);
